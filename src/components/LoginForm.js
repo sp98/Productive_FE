@@ -1,7 +1,16 @@
 import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form';
+import axios from 'axios';
 
 class LoginForm extends Component {
+
+  componentWillMount() {
+   axios({
+     method: 'get',
+     url: 'http://127.0.0.1:8000/api/v1/users'
+   })
+   .then((response) => console.log(JSON.stringify(response)));
+  }
 
   formSubmit(values) {
     console.log(values);

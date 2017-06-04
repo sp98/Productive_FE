@@ -1,14 +1,22 @@
 import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form';
+import DjangoCSRFToken from 'django-react-csrftoken';
 import axios from 'axios';
 
-class SignUpform extends Component {
+const csrfToken = 'testString';
 
+class SignUpform extends Component {
 formSubmit(values) {
   const ROOT_URL = 'http://127.0.0.1:8000/api/v1/';
   const endPoints = 'user/create/';
   console.log(values);
-  axios.post(`${ROOT_URL}${endPoints}`, values);
+  //axios.post(`${ROOT_URL}${endPoints}`, values, headers: {"X-CSRFToken": csrfToken});
+  axios({
+    method: 'post',
+    url: `${ROOT_URL}${endPoints}`,
+    data: values,
+    headers: { 'X-CSRFToken': csrfToken },
+  });
 }
 
 renderInputField(field) {
@@ -32,6 +40,7 @@ renderInputField(field) {
     <div>
       <h1> Sign Up </h1>
       <form onSubmit={handleSubmit(this.formSubmit)}>
+      <DjangoCSRFToken />
 
       <Field
       name='email'
