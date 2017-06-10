@@ -1,23 +1,27 @@
 import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form';
-import axios from 'axios';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { userLogin } from '../actions';
 
 class LoginForm extends Component {
 
-  componentWillMount() {
-   axios({
-     method: 'get',
-     url: 'http://127.0.0.1:8000/api/v1/users'
-   })
-   .then((response) => console.log(JSON.stringify(response)));
-  }
+   componentWillReceiveProps() {
+
+   }
 
   formSubmit(values) {
-    console.log(values);
+    //console.log(`form sumbitted with ${values}`);
+    this.props.userLogin(values);
+    if (this.props.authCreds) {
+      console.log(this.props.authCreds.data.token);
+      localStorage.setItem('token', this.props.authCreds.data.token);
+      localStorage.setItem('user_id', this.props.authCreds.data.user_id);
+      this.props.history.push('/daily_tasks');
+    }
   }
 
   renderInputField(field) {
-    //console.log(field);
     const { meta: { touched, error }, placeholder, type } = field;
     return (
       <div>
@@ -39,7 +43,7 @@ class LoginForm extends Component {
     return (
       <div>
        <h1> Login </h1>
-       <form onSubmit={handleSubmit(this.formSubmit)} >
+       <form onSubmit={handleSubmit(this.formSubmit.bind(this))} >
          <Field
            name='email'
            placeholder='Enter Email'
@@ -62,11 +66,16 @@ class LoginForm extends Component {
 }
 }
 
-
+//client side validation of the form
 const validate = (values) => {
  const errors = {};
  if (!values.email) {
    errors.email = 'Please enter email';
+ } else {
+   const isEmailFormat = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email);
+   if (!isEmailFormat) {
+     errors.email = 'Incorrect Email Format. Should be of the form abc@xyz.com';
+   }
  }
 
  if (!values.password) {
@@ -76,7 +85,21 @@ const validate = (values) => {
  return errors;
 };
 
+
+const mapStateToProps = state => {
+  return {
+     authCreds: state.authCreds
+     };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  //sending the action creator results to all the reducers using dispatch function
+  return bindActionCreators({ userLogin }, dispatch);
+};
+
 export default reduxForm({
-validate,
-form: 'LoginForm',
-})(LoginForm);
+ validate,
+ form: 'LoginForm',
+})(
+  connect(mapStateToProps, mapDispatchToProps)(LoginForm)
+);

@@ -3,22 +3,28 @@ import { Field, reduxForm } from 'redux-form';
 import DjangoCSRFToken from 'django-react-csrftoken';
 import axios from 'axios';
 
-const csrfToken = 'testString';
+//const csrfToken = 'testString';
+const ROOT_URL = 'http://127.0.0.1:8000/api/v1/';
+const CREATE_USER_END_POINT = 'sign_up/';
 
 class SignUpform extends Component {
+
+  showAlertMessage(error) {
+    //window.alert(error);
+  }
+
+//Form submition
 formSubmit(values) {
-  const ROOT_URL = 'http://127.0.0.1:8000/api/v1/';
-  const endPoints = 'user/create/';
-  console.log(values);
-  //axios.post(`${ROOT_URL}${endPoints}`, values, headers: {"X-CSRFToken": csrfToken});
   axios({
     method: 'post',
-    url: `${ROOT_URL}${endPoints}`,
+    url: `${ROOT_URL}${CREATE_USER_END_POINT}`,
     data: values,
-    headers: { 'X-CSRFToken': csrfToken },
-  });
+  })
+  .then((response) => console.log(response))
+  .catch((error) => { this.showAlertMessage(error); });
 }
 
+//Input component for the form
 renderInputField(field) {
   const { meta: { touched, error }, placeholder, type } = field;
   return (
@@ -28,12 +34,13 @@ renderInputField(field) {
        placeholder={placeholder}
        type={type}
       />
-      <div className='text-help'>
+     <div className='text-help'>
       { touched ? error : ''}
       </div>
     </div>
   );
 }
+
  render() {
    const { handleSubmit, submitting, pristine, reset } = this.props;
    return (
@@ -50,9 +57,9 @@ renderInputField(field) {
       />
 
       <Field
-      name='userName'
+      name='username'
       component={this.renderInputField}
-      placeholder='Enter UserName'
+      placeholder='Enter Username'
       type='text'
       />
 
@@ -89,6 +96,11 @@ const validate = (values) => {
 
   if (!values.email) {
     errors.email = 'Please enter email';
+  } else {
+    const isEmailFormat = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email);
+    if (!isEmailFormat) {
+      errors.email = 'Incorrect Email Format. Should be of the form abc@xyz.com';
+    }
   }
 
   if (!values.password) {
@@ -111,7 +123,25 @@ const validate = (values) => {
   return errors;
 };
 
+
+const asyncValidate = (values) => {
+  console.log(`sending ${JSON.stringify(values)}`);
+  return axios({
+    method: 'post',
+    url: `${ROOT_URL}user-check/`,
+    data: values,
+  })
+  .then((response) => {
+    console.log(response.data);
+    if (response.data !== 'User Validated Successfully') {
+      throw { username: response.data }
+    }
+  });
+};
+
 export default reduxForm({
   validate,
+  asyncValidate,
+  asyncBlurFields: ['username'],
   form: 'SignUpForm'
 })(SignUpform);

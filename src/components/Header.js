@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux'
+import axios from 'axios';
+
+const ROOT_URL = 'http://127.0.0.1:8000/api/v1/';
+const LOGOUT_USER_END_POINT = 'logout/';
 
 class Header extends Component {
   state = { selectedTab: '' };
@@ -9,6 +14,24 @@ class Header extends Component {
     this.setState({ selectedTab: period });
   }
 
+  onLogout() {
+    if (this.props.user_id) {
+      console.log(this.props.user_id);
+      console.log(this.props.token);
+      axios({
+        method: 'post',
+        url: `${ROOT_URL}${LOGOUT_USER_END_POINT}`,
+        data: { user_id: localStorage.getItem('user_id') },
+        headers: {
+          Authorization: `Token ${localStorage.getItem('token')}`
+        }
+      })
+      .then(() => {
+        this.props.history.push('login/');
+        this.setState = { token: '' };
+    });
+  }
+}
   render() {
     console.log(`Selected tab is ----> ${this.state.selectedTab}`);
     return (
@@ -37,9 +60,29 @@ class Header extends Component {
         </li>
        </ul>
 
+        <div className="pull-right">
+        <button
+        className="btn btn-primary"
+         onClick={() => this.onLogout()}
+        >
+         Logout
+         </button>
+         </div>
+
       </div>
     );
   }
 }
 
-export default Header;
+const mapStateToProps = state => {
+  if (state.authCreds) {
+    return {
+      user_id: state.authCreds.data.user_id,
+      token: state.authCreds.data.token
+    };
+  }
+
+  return { user_id: ' ' };
+};
+
+export default connect(mapStateToProps)(Header);

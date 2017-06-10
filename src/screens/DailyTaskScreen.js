@@ -6,7 +6,7 @@ class DailyTaskScreen extends Component {
   render() {
     return (
       <div>
-      <Header />
+      <Header history={this.props.history} />
       <div> Daily Tasks </div>
       </div>
     );
