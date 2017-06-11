@@ -12,6 +12,7 @@ import MonthlyTaskScreen from './screens/MonthlyTaskScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import SignUpScreen from './screens/SignUpScreen';
+import NewTaskScreen from './screens/NewTaskScreen';
 
 const createStoreWithMiddleware = applyMiddleware(promise)(createStore);
 
@@ -20,9 +21,10 @@ ReactDOM.render(
   <div>
     <BrowserRouter>
        <Switch>
-          <Route path='/daily_tasks' component={DailyTaskScreen} />
-          <Route path='/weekly_tasks' component={WeeklyTaskScreen} />
-          <Route path='/monthly_tasks' component={MonthlyTaskScreen} />
+          <Route path='/:user_id/daily/:day' component={DailyTaskScreen} />
+          <Route path='/:user_id/weekly/:week' component={WeeklyTaskScreen} />
+          <Route path='/:user_id/monthly/:month' component={MonthlyTaskScreen} />
+          <Route path='/new' component={NewTaskScreen} />
           <Route path='/signup' component={SignUpScreen} />
           <Route path='/login' component={LoginScreen} />
           <Route path='/' component={WelcomeScreen} />

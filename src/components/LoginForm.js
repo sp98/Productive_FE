@@ -17,7 +17,8 @@ class LoginForm extends Component {
       console.log(this.props.authCreds.data.token);
       localStorage.setItem('token', this.props.authCreds.data.token);
       localStorage.setItem('user_id', this.props.authCreds.data.user_id);
-      this.props.history.push('/daily_tasks');
+      const today = new Date().toJSON().slice(0, 10).replace(/-/g, '-');
+      this.props.history.push(`${localStorage.getItem('user_id')}/daily/${today}`);
     }
   }
 

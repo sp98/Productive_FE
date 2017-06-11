@@ -13,8 +13,11 @@ module.exports = {
       loader: 'babel-loader',
       query: {
         presets: ['react', 'es2015', 'stage-1']
-      }
-    }]
+      },
+    },
+    { test: /\.css$/, loaders: ['style', 'css'] },
+
+  ]
   },
   resolve: {
     extensions: ['.js', '.jsx']

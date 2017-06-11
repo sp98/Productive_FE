@@ -27,7 +27,7 @@ class Header extends Component {
         }
       })
       .then(() => {
-        this.props.history.push('login/');
+        this.props.history.push('/');
         this.setState = { token: '' };
     });
   }
@@ -35,40 +35,37 @@ class Header extends Component {
   render() {
     console.log(`Selected tab is ----> ${this.state.selectedTab}`);
     return (
-      <div>
-      <ul className="nav nav-pills nav-fill">
-        <li className="nav-item">
+      <div style={styles.navBarStyle}>
+      <nav className="navbar navbar-default bg-faded" role="navigation">
+      <ul className="navbar-nav list-unstyled">
+        <li className="nav-item col-sm-2" >
            <Link
            className={this.state.selectedTab === 'daily' ? 'nav-link active' : 'nav-link'}
            to='/daily_tasks'
            onClick={() => this.onTabSelection('daily')}
            >Daily</Link>
         </li>
-        <li className="nav-item">
+        <li className="nav-item col-sm-2">
           <Link
           className={this.state.selectedTab === 'weekly' ? 'nav-link active' : 'nav-link'}
           to='/weekly_tasks'
           onClick={() => this.onTabSelection('weekly')}
           >Weekly</Link>
         </li>
-        <li className="nav-item">
+        <li className="nav-item col-sm-2">
           <Link
           className={this.state.selectedTab === 'monthly' ? 'nav-link active' : 'nav-link'}
           to='/monthly_tasks'
           onClick={() => this.onTabSelection('monthly')}
           >Monthly</Link>
         </li>
-       </ul>
-
-        <div className="pull-right">
-        <button
-        className="btn btn-primary"
-         onClick={() => this.onLogout()}
-        >
-         Logout
+        <li className="nav-item col-sm-2">
+        <button className="btn btn-primary" onClick={() => this.onLogout()}>
+          Logout
          </button>
-         </div>
-
+         </li>
+       </ul>
+       </nav>
       </div>
     );
   }
@@ -83,6 +80,12 @@ const mapStateToProps = state => {
   }
 
   return { user_id: ' ' };
+};
+
+const styles = {
+  navBarStyle: {
+    marginTop: '4px'
+  }
 };
 
 export default connect(mapStateToProps)(Header);
