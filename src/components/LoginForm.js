@@ -2,34 +2,41 @@ import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import moment from 'moment';
 import { userLogin } from '../actions';
+
+const today = moment().format('YYYY-MM-DD');
 
 class LoginForm extends Component {
 
-   componentWillReceiveProps() {
+ onSuccessfullLogin() {
+   console.log(this.props.authCreds.data.token);
+   localStorage.setItem('token', this.props.authCreds.data.token);
+   localStorage.setItem('user_id', this.props.authCreds.data.user_id);
+   this.props.history.push({
+     pathname: `${localStorage.getItem('user_id')}/Daily/${today}`,
+     state: {
+       selectedDate: today,
+       cadence: 'Daily'
+     } });
+ }
 
-   }
-
-  formSubmit(values) {
-    //console.log(`form sumbitted with ${values}`);
-    this.props.userLogin(values);
-    if (this.props.authCreds) {
-      console.log(this.props.authCreds.data.token);
-      localStorage.setItem('token', this.props.authCreds.data.token);
-      localStorage.setItem('user_id', this.props.authCreds.data.user_id);
-      const today = new Date().toJSON().slice(0, 10).replace(/-/g, '-');
-      this.props.history.push(`${localStorage.getItem('user_id')}/daily/${today}`);
-    }
-  }
+ formSubmit(values) {
+   //console.log(`form sumbitted with ${values}`);
+   this.props.userLogin(values, () => {
+     this.onSuccessfullLogin();
+   });
+ }
 
   renderInputField(field) {
     const { meta: { touched, error }, placeholder, type } = field;
     return (
-      <div>
+      <div >
       <input
        {...field.input}
        placeholder={placeholder}
        type={type}
+       style={styles.loginFormFieldStyles}
       />
       <div className='text-help'>
        {touched ? error : ''}
@@ -41,9 +48,10 @@ class LoginForm extends Component {
   render() {
   //console.log(this.props);
   const { handleSubmit, submitting, pristine } = this.props;
+  const { loginFormStyles, loginTitle, loginButtonStyles } = styles;
     return (
-      <div>
-       <h1> Login </h1>
+      <div style={loginFormStyles}>
+        <div style={loginTitle}> Login </div>
        <form onSubmit={handleSubmit(this.formSubmit.bind(this))} >
          <Field
            name='email'
@@ -59,7 +67,7 @@ class LoginForm extends Component {
            type='password'
          />
 
-         <button className='btn btn-primary' disabled={submitting || pristine}> Login </button>
+         <button style={loginButtonStyles} className='btn btn-primary' disabled={submitting || pristine}> Login </button>
        </form>
       </div>
 
@@ -86,6 +94,46 @@ const validate = (values) => {
  return errors;
 };
 
+
+const styles = {
+  loginFormStyles: {
+  flex: 1,
+  backgroundColor: 'powderblue',
+  borderRadius: '5px',
+  width: '450px',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+  },
+
+  loginTitle: {
+    fontSize: '20px',
+    textAlign: 'center',
+    padding: '20px 20px 0',
+    margin: 0,
+  },
+
+  loginFormFieldStyles: {
+    color: '#ffff',
+    padding: '20px 20px 0',
+    margin: '20px 20px 0',
+    borderRadius: '5px',
+    width: '300px',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+
+  loginButtonStyles: {
+    width: '300px',
+  padding: '10px 10px 10px',
+  margin: '20px 20px 50px',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontSize: '20px',
+  textAlign: 'center',
+  }
+};
 
 const mapStateToProps = state => {
   return {

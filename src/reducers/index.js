@@ -2,13 +2,13 @@ import { combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form';
 import reducerAuth from './reducer_auth';
 import reducerTask from './reducer_task';
-import reducerFetch from './reducer_fetch';
+import reducerSelectedTasks from './reducer_selectedTasks';
 
 const rootReducer = combineReducers({
   form: formReducer,
   authCreds: reducerAuth,
-  taskStatus: reducerTask,
-  tasks: reducerFetch
+  tasks: reducerTask,
+  selectedTasks: reducerSelectedTasks
 });
 
 export default rootReducer;
