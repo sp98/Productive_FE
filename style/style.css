@@ -2423,6 +2423,7 @@
 .react-date-picker__nav-bar--theme-default {
   padding-top: 5px;
   padding-bottom: 5px;
+  background: 'black';
   font-size: 1.2rem; }
   .react-date-picker__nav-bar--theme-default .react-date-picker__nav-bar-secondary-arrow {
     margin-right: 7px; }

@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 import { LOGIN_USER,
-  LOGOUT_USER } from './types';
+  LOGOUT_USER,
+  SHOW_NOTIFICATIONS } from './types';
 
 const ROOT_URL = 'http://127.0.0.1:8000/api/v1/';
 const LOGIN_END_POINT = 'login/';
@@ -44,3 +45,14 @@ const userLogoutSuccess = (dispatch, response) => {
     payload: response
   });
 };
+
+export function showNotification(display, type, message) {
+  const data = { display, type, message };
+  return (
+    {
+      type: SHOW_NOTIFICATIONS,
+      payload: data
+    }
+
+  );
+}

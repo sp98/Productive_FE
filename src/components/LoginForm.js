@@ -3,22 +3,27 @@ import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import moment from 'moment';
-import { userLogin } from '../actions';
+import { userLogin, showNotification } from '../actions';
+import { notifyError } from './Notifications';
 
 const today = moment().format('YYYY-MM-DD');
 
 class LoginForm extends Component {
 
  onSuccessfullLogin() {
-   console.log(this.props.authCreds.data.token);
-   localStorage.setItem('token', this.props.authCreds.data.token);
-   localStorage.setItem('user_id', this.props.authCreds.data.user_id);
-   this.props.history.push({
-     pathname: `${localStorage.getItem('user_id')}/Daily/${today}`,
-     state: {
-       selectedDate: today,
-       cadence: 'Daily'
-     } });
+   if (this.props.authCreds.data !== 'Invalid email or password') {
+     console.log(this.props.authCreds.data.token);
+     localStorage.setItem('token', this.props.authCreds.data.token);
+     localStorage.setItem('user_id', this.props.authCreds.data.user_id);
+     this.props.history.push({
+       pathname: `${localStorage.getItem('user_id')}/Daily/${today}`,
+       state: {
+         selectedDate: today,
+         cadence: 'Daily'
+       } });
+   } else {
+     this.props.showNotification(true, this.props.authCreds.data, 'error');
+   }
  }
 
  formSubmit(values) {
@@ -51,8 +56,9 @@ class LoginForm extends Component {
   const { loginFormStyles, loginTitle, loginButtonStyles } = styles;
     return (
       <div style={loginFormStyles}>
-        <div style={loginTitle}> Login </div>
+      <div style={loginTitle}> Login </div>
        <form onSubmit={handleSubmit(this.formSubmit.bind(this))} >
+
          <Field
            name='email'
            placeholder='Enter Email'
@@ -67,8 +73,20 @@ class LoginForm extends Component {
            type='password'
          />
 
-         <button style={loginButtonStyles} className='btn btn-primary' disabled={submitting || pristine}> Login </button>
+      <div>
+      <button
+      style={loginButtonStyles}
+      className='btn btn-primary' disabled={submitting || pristine}
+      >
+      Login </button>
+      </div>
        </form>
+       { this.state.notify.display ?
+         <notifyError
+          message={this.state.notify.message}
+          onCancel={() => this.setState({ showError: false })}
+         />
+         : '' }
       </div>
 
     );
@@ -97,53 +115,50 @@ const validate = (values) => {
 
 const styles = {
   loginFormStyles: {
-  flex: 1,
+  display: 'flex',
   backgroundColor: 'powderblue',
   borderRadius: '5px',
   width: '450px',
-  display: 'flex',
   flexDirection: 'column',
-  justifyContent: 'center',
   alignItems: 'center',
   },
 
   loginTitle: {
+    flex: 1,
     fontSize: '20px',
-    textAlign: 'center',
     padding: '20px 20px 0',
     margin: 0,
   },
 
   loginFormFieldStyles: {
+    flex: 1,
     color: '#ffff',
     padding: '20px 20px 0',
     margin: '20px 20px 0',
-    borderRadius: '5px',
+    borderRadius: '6px',
     width: '300px',
-    alignItems: 'center',
-    justifyContent: 'center'
   },
 
   loginButtonStyles: {
-    width: '300px',
+  flex: 1,
+  width: '300px',
   padding: '10px 10px 10px',
   margin: '20px 20px 50px',
-  alignItems: 'center',
-  justifyContent: 'center',
   fontSize: '20px',
-  textAlign: 'center',
+  borderRadius: '6px',
   }
 };
 
 const mapStateToProps = state => {
   return {
-     authCreds: state.authCreds
+     authCreds: state.authCreds,
+     notify: state.notify
      };
 };
 
 const mapDispatchToProps = (dispatch) => {
   //sending the action creator results to all the reducers using dispatch function
-  return bindActionCreators({ userLogin }, dispatch);
+  return bindActionCreators({ userLogin, showNotification }, dispatch);
 };
 
 export default reduxForm({

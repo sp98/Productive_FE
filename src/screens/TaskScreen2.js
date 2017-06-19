@@ -96,23 +96,22 @@ class TaskScreen extends Component {
   render() {
     //console.log(`Rendering Daily Task Screen with data ---> ${this.props.tasks.data}`);
     const { cadence, selectedDate } = this.props.location.state;
-    const { taskHeaderStyle, taskHeaderButtonAlignmentStyle, taskHeaderTitleStyle } = styles;
     return (
       <div>
-
       <div>
         <Header history={this.props.history} />
       </div>
 
-      {/* Task Title and Buttons */}
-       <div style={taskHeaderStyle}>
-
-         <h4 style={taskHeaderTitleStyle}>
+       <div className="row">
+         <div className="col-md-4">
+           <h2 className="daily_header text-xs-center">
            {cadence} Tasks
-         </h4>
-
-         <div style={taskHeaderButtonAlignmentStyle}>
+           </h2>
+         </div>
+         <div className="col-md-4 text-xs-right" >
            <Link className="btn btn-primary " to="/new"> New </Link>
+         </div>
+         <div className="col-md-4 text-xs-right" >
            <DeleteTasks
            cadence="Daily"
            selectedDate={selectedDate}
@@ -120,7 +119,6 @@ class TaskScreen extends Component {
            />
          </div>
        </div>
-       {/* Task title and Buttons ends here */}
 
        <div className="row">
           <div className="col-sm-4">
@@ -146,23 +144,8 @@ class TaskScreen extends Component {
 }
 
 const styles = {
-  taskHeaderStyle: {
-   display: 'flex',
-   marginTop: '10px',
-   flexDirection: 'row',
-  },
-
-  taskHeaderTitleStyle: {
-    flex: 1
-  },
-
-  taskHeaderButtonAlignmentStyle: {
-    flex: 1,
-  },
-
   datePickerStyle: {
     backgroundColor: 'blue'
-
   }
 };
 

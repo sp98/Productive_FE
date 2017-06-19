@@ -34,43 +34,57 @@ class Header extends Component {
   render() {
     //console.log(`Selected tab is ----> ${this.state.selectedTab}`);
     return (
-      <div style={styles.navBarStyle}>
-      <nav className="navbar navbar-default bg-faded" role="navigation">
+      <nav style={styles.navBarStyle} className="navbar navbar-default bg-faded" role="navigation">
+      <div style={styles.navItemStyles} >
       <ul className="navbar-nav list-unstyled">
         <li className="nav-item col-sm-2" >
-           <button
+           <div
            className={this.state.selectedTab === 'daily' ? 'nav-link active' : 'nav-link'}
            onClick={() => this.onTabSelection('Daily', moment().format('YYYY-MM-DD'))}
-           >Daily</button>
+           >Daily</div>
         </li>
         <li className="nav-item col-sm-2">
-          <button
+          <div
           className={this.state.selectedTab === 'weekly' ? 'nav-link active' : 'nav-link'}
           onClick={() => this.onTabSelection('Weekly', `${moment().year()}-${moment().week()}`)}
-          >Weekly</button>
+          >Weekly</div>
         </li>
         <li className="nav-item col-sm-2">
-          <button
+          <div
           className={this.state.selectedTab === 'monthly' ? 'nav-link active' : 'nav-link'}
           to='/monthly_tasks'
           onClick={() => this.onTabSelection('Monthly', moment().format('YYYY-MM'))}
-          >Monthly</button>
+          >Monthly</div>
         </li>
-        <li className="nav-item col-sm-2">
-        <button className="btn btn-primary" onClick={() => this.onLogout()}>
-          Logout
-         </button>
-         </li>
        </ul>
+       </div>
+
+       <div style={styles.navLogoutButtonStyle}>
+        <div className="btn btn-primary" onClick={() => this.onLogout()}>
+         Logout
+        </div>
+       </div>
        </nav>
-      </div>
+
     );
   }
 }
 
 const styles = {
   navBarStyle: {
-    marginTop: '4px'
+    marginTop: '4px',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center'
+  },
+
+  navItemStyles: {
+    flex: 1,
+    alignContent: 'space-between'
+  },
+
+  navLogoutButtonStyle: {
+   
   }
 };
 

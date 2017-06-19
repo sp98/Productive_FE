@@ -5,3 +5,5 @@ export const FETCH_TASK = 'fetch_task';
 export const SELECT_TASK = 'select_task';
 export const DELETE_TASK = 'delete_Tasks';
 export const EMPTY_SELECTED_TASKS = 'empty_selected_tasks';
+export const SHOW_NOTIFICATIONS = 'show_notifications';
+export const HIDE_NOTIFICATIONS = 'hide_notifications';
