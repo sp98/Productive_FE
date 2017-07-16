@@ -4,7 +4,7 @@ import moment from 'moment';
 import { DateField, DatePicker, HistoryView, Calendar } from 'react-date-picker';
 import { connect } from 'react-redux';
 
-import { createTask } from '../actions';
+import { createTask, showNotification } from '../actions';
 
 class CreateTaskForm extends React.Component {
   state = { selectedCadence: '' };
@@ -16,6 +16,8 @@ class CreateTaskForm extends React.Component {
     }
     this.props.createTask(userID, values,
     () => {
+      this.props.showNotification(true, 'Success',
+                                 `Added ${values.taskCadence} tasks on ${values.taskDate}`);
       this.props.history.push({
         pathname: `${userID}/${values.taskCadence}/${values.taskDate}`,
         state: {
@@ -202,4 +204,4 @@ const validate = (values) => {
 export default reduxForm({
   validate,
   form: 'CreateTaskForm',
-})(connect(null, { createTask })(CreateTaskForm));
+})(connect(null, { createTask, showNotification })(CreateTaskForm));

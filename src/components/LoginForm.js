@@ -3,18 +3,20 @@ import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import moment from 'moment';
-import { userLogin, showNotification } from '../actions';
-import { notifyError } from './Notifications';
+import { userLogin, showNotification, hideNotifications } from '../actions';
+import { NotifyError } from './Notifications';
 
 const today = moment().format('YYYY-MM-DD');
 
 class LoginForm extends Component {
 
  onSuccessfullLogin() {
-   if (this.props.authCreds.data !== 'Invalid email or password') {
+   const { data } = this.props.authCreds;
+   if (data !== 'Invalid email or password') {
      console.log(this.props.authCreds.data.token);
-     localStorage.setItem('token', this.props.authCreds.data.token);
-     localStorage.setItem('user_id', this.props.authCreds.data.user_id);
+     localStorage.setItem('token', data.token);
+     localStorage.setItem('user_id', data.user_id);
+     this.props.hideNotifications();
      this.props.history.push({
        pathname: `${localStorage.getItem('user_id')}/Daily/${today}`,
        state: {
@@ -22,7 +24,7 @@ class LoginForm extends Component {
          cadence: 'Daily'
        } });
    } else {
-     this.props.showNotification(true, this.props.authCreds.data, 'error');
+     this.props.showNotification(true, 'Error', data);
    }
  }
 
@@ -32,6 +34,7 @@ class LoginForm extends Component {
      this.onSuccessfullLogin();
    });
  }
+
 
   renderInputField(field) {
     const { meta: { touched, error }, placeholder, type } = field;
@@ -81,10 +84,11 @@ class LoginForm extends Component {
       Login </button>
       </div>
        </form>
-       { this.state.notify.display ?
-         <notifyError
-          message={this.state.notify.message}
-          onCancel={() => this.setState({ showError: false })}
+       { this.props.notify.display === true ?
+         <NotifyError
+          title={this.props.notify.type}
+          message={this.props.notify.message}
+          onCancel={() => this.props.hideNotifications()}
          />
          : '' }
       </div>
@@ -101,7 +105,7 @@ const validate = (values) => {
  } else {
    const isEmailFormat = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email);
    if (!isEmailFormat) {
-     errors.email = 'Incorrect Email Format. Should be of the form abc@xyz.com';
+     errors.email = 'Invalid Email Format (Trye abc@xyz.com)';
    }
  }
 
@@ -158,7 +162,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch) => {
   //sending the action creator results to all the reducers using dispatch function
-  return bindActionCreators({ userLogin, showNotification }, dispatch);
+  return bindActionCreators({ userLogin, showNotification, hideNotifications }, dispatch);
 };
 
 export default reduxForm({

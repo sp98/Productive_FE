@@ -1,13 +1,15 @@
 import React from 'react';
-import { connect } from 'react-redux'
-import { deleteTasks, fetchTasks, emptySelectedTasks } from '../actions';
+import { connect } from 'react-redux';
+import { deleteTasks, fetchTasks, emptySelectedTasks, showModals } from '../actions';
+import Confirm from '../modals/Confirmation';
 
 class DeleteTasks extends React.Component {
 
   onDeletePress() {
     const toBeDeleted = this.props.selectedTasks;
     if (toBeDeleted.length < 1) {
-      window.alert('Nothing to Delete');
+      console.log('show model here');
+      this.props.showModals('CONFIRM_POPUP');
     } else {
       console.log(`about to delete ${JSON.stringify(toBeDeleted)}`);
       this.props.deleteTasks(toBeDeleted, () => {
@@ -30,4 +32,4 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps,
-  { deleteTasks, fetchTasks, emptySelectedTasks })(DeleteTasks);
+  { deleteTasks, fetchTasks, emptySelectedTasks, showModals })(DeleteTasks);

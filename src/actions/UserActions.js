@@ -2,7 +2,8 @@ import axios from 'axios';
 
 import { LOGIN_USER,
   LOGOUT_USER,
-  SHOW_NOTIFICATIONS } from './types';
+  SHOW_NOTIFICATIONS,
+  HIDE_NOTIFICATIONS } from './types';
 
 const ROOT_URL = 'http://127.0.0.1:8000/api/v1/';
 const LOGIN_END_POINT = 'login/';
@@ -47,6 +48,7 @@ const userLogoutSuccess = (dispatch, response) => {
 };
 
 export function showNotification(display, type, message) {
+  console.log('show notification called');
   const data = { display, type, message };
   return (
     {
@@ -54,5 +56,13 @@ export function showNotification(display, type, message) {
       payload: data
     }
 
+  );
+}
+
+export function hideNotifications() {
+  return (
+    {
+    type: HIDE_NOTIFICATIONS
+    }
   );
 }

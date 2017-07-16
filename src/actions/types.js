@@ -7,3 +7,5 @@ export const DELETE_TASK = 'delete_Tasks';
 export const EMPTY_SELECTED_TASKS = 'empty_selected_tasks';
 export const SHOW_NOTIFICATIONS = 'show_notifications';
 export const HIDE_NOTIFICATIONS = 'hide_notifications';
+export const SHOW_MODALS = 'show_modals';
+export const HIDE_MODALS = 'hide_modals';

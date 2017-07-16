@@ -4,10 +4,12 @@ import { HistoryView, Calendar } from 'react-date-picker';
 import moment from 'moment';
 import { connect } from 'react-redux';
 
-import { fetchTasks, emptySelectedTasks } from '../actions';
+import { fetchTasks, emptySelectedTasks, hideNotifications, showModals } from '../actions';
 import Header from '../components/Header';
 import TaskItem from '../components/TaskItem';
 import DeleteTasks from '../components/DeleteTasks';
+import { NotifySuccess, NotifyError } from '../components/Notifications';
+import ModalConductor from '../modals/ModalConductor';
 
 class TaskScreen extends Component {
 
@@ -29,6 +31,20 @@ class TaskScreen extends Component {
         }
       });
     });
+  }
+
+  getNotifications() {
+   const { notify } = this.props;
+   console.log(notify);
+   if (notify.display === true && notify.type === 'Success') {
+     console.log('show Notifications');
+     return (
+       <NotifySuccess
+        message={notify.message}
+        onCancel={() => this.props.hideNotifications()}
+       />
+     );
+   }
   }
 
   renderDatePicker() {
@@ -96,56 +112,78 @@ class TaskScreen extends Component {
   render() {
     //console.log(`Rendering Daily Task Screen with data ---> ${this.props.tasks.data}`);
     const { cadence, selectedDate } = this.props.location.state;
-    const { taskHeaderStyle, taskHeaderButtonAlignmentStyle, taskHeaderTitleStyle } = styles;
+    const { taskScreenStyle,
+            taskHeaderStyle,
+            taskHeaderButtonAlignmentStyle,
+            taskHeaderTitleStyle } = styles;
+
     return (
       <div>
+        <div style={taskScreenStyle}>
+          <ModalConductor {...this.props} />
 
-      <div>
-        <Header history={this.props.history} />
+          <div>
+            <Header history={this.props.history} />
+          </div>
+
+          {/* Task Title and Buttons */}
+           <div style={taskHeaderStyle}>
+
+             <h4 style={taskHeaderTitleStyle}>
+               {cadence} Tasks
+             </h4>
+
+             <div style={taskHeaderButtonAlignmentStyle}>
+               <Link className="btn btn-primary " to="/new"> New </Link>
+               <DeleteTasks
+               cadence="Daily"
+               selectedDate={selectedDate}
+               user_id={localStorage.getItem('user_id')}
+               />
+             </div>
+           </div>
+           {/* Task title and Buttons ends here */}
+
+           <div className="row">
+              <div className="col-sm-4">
+                  {this.renderDatePicker()}
+             </div>
+
+
+             <div className="col-sm-6">
+             <h4>{this.renderTaskDate()}</h4>
+             <ul className="list-group">
+              {this.props.tasks.data ? this.props.tasks.data.map((task) => {
+               return (
+                   <TaskItem task={task} key={task.id} />
+                   );
+                 }) : ''}
+             </ul>
+             </div>
+           </div>
+
+           { this.props.notify.display === true ?
+             <NotifySuccess
+              title={this.props.notify.type}
+              message={this.props.notify.message}
+              onCancel={() => this.props.hideNotifications()}
+             />
+             : '' }
       </div>
-
-      {/* Task Title and Buttons */}
-       <div style={taskHeaderStyle}>
-
-         <h4 style={taskHeaderTitleStyle}>
-           {cadence} Tasks
-         </h4>
-
-         <div style={taskHeaderButtonAlignmentStyle}>
-           <Link className="btn btn-primary " to="/new"> New </Link>
-           <DeleteTasks
-           cadence="Daily"
-           selectedDate={selectedDate}
-           user_id={localStorage.getItem('user_id')}
-           />
-         </div>
-       </div>
-       {/* Task title and Buttons ends here */}
-
-       <div className="row">
-          <div className="col-sm-4">
-              {this.renderDatePicker()}
-         </div>
-
-
-         <div className="col-sm-6">
-         <h4>{this.renderTaskDate()}</h4>
-         <ul className="list-group">
-          {this.props.tasks.data ? this.props.tasks.data.map((task) => {
-           return (
-               <TaskItem task={task} key={task.id} />
-               );
-             }) : ''}
-         </ul>
-         </div>
-       </div>
-
-      </div>
+    </div>
     );
   }
 }
 
 const styles = {
+  taskScreenStyle: {
+    display: 'flex',
+    flexDirection: 'column',
+    zIndex: '999',
+    position: 'relative',
+
+  },
+
   taskHeaderStyle: {
    display: 'flex',
    marginTop: '10px',
@@ -167,7 +205,13 @@ const styles = {
 };
 
 const mapStateToProps = state => {
-  //console.log('Inside map state to props in Daily Task Screen');
-  return { tasks: state.tasks, selectedTasks: state.selectedTasks };
+  return { tasks: state.tasks,
+           selectedTasks: state.selectedTasks,
+           notify: state.notify,
+           currentModal: state.currentModal };
 };
-export default connect(mapStateToProps, { fetchTasks, emptySelectedTasks })(TaskScreen);
+export default connect(mapStateToProps,
+  { fetchTasks,
+    emptySelectedTasks,
+    hideNotifications,
+    showModals })(TaskScreen);
